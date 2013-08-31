@@ -1,9 +1,13 @@
 require "url_fetcher/version"
+require "net/http"
+require "open-uri"
+require "tempfile"
 
 # This class will fetch the contents of a URL and store them in a Tempfile. The
 # results are exposed as a stream. This class is not thread safe.
 module UrlFetcher
   class Base
+    MEGABYTE = 1048576.freeze
     attr_reader :url
 
     # Pass in a block that will be called with the new URL on a redirect to hook into
@@ -11,8 +15,13 @@ module UrlFetcher
     def initialize(url, options = {}, &redirect_hook)
       @url = url
       @redirect_hook = redirect_hook
-      options = options.reverse_merge(:unlink => true, :follow_redirects => true, :method => :get)
+      # TODO: make hash with indifferent access?
+      options = default_options.merge(options)
       @response = fetch_response(@url, options)
+    end
+
+    def default_options
+       { :unlink => true, :follow_redirects => true, :method => :get }
     end
 
     # Return an open stream to the downloaded URL.
@@ -67,7 +76,7 @@ module UrlFetcher
         end
         if resp.is_a?(Net::HTTPSuccess) && resp.class.body_permitted?
           content_length = resp["Content-Length"].to_i
-          raise "File to big (#{content_length} bytes" if content_length > (options[:max_size] || 10.megabytes)
+          raise "File to big (#{content_length} bytes" if content_length > (options[:max_size] || 10 * MEGABYTE)
           tempfile = Tempfile.new("url_fetcher", :encoding => 'ascii-8bit')
           resp.read_body(tempfile)
           tempfile.close
