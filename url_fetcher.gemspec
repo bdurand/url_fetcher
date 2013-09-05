@@ -6,10 +6,10 @@ require 'url_fetcher/version'
 Gem::Specification.new do |spec|
   spec.name          = "url_fetcher"
   spec.version       = UrlFetcher::VERSION
-  spec.authors       = ["Juan Pemberthy"]
-  spec.email         = ["jpemberthy@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.authors       = ["weheartit"]
+  spec.email         = ["dev@weheartit.com"]
+  spec.description   = %q{Fetch resources from the internetz!}
+  spec.summary       = %q{Fetch resources from the internetz with circular redirects support}
   spec.homepage      = ""
   spec.license       = "MIT"
 
