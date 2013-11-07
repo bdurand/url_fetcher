@@ -88,14 +88,14 @@ describe UrlFetcher do
 
   it "should raise an error if there is a circular redirect" do
     WebMock.stub_request(:get, "http://example.com/test").to_return(:status => 302, :headers => {"Location" => "http://example.com/test"})
-    lambda{ UrlFetcher.new("http://example.com/test") }.should raise_error("Circular redirect")
+    lambda{ UrlFetcher.new("http://example.com/test") }.should raise_error(UrlFetcher::CircularRedirect)
   end
 
   it "should raise an error if there are too many redirects" do
     6.times do |i|
       WebMock.stub_request(:get, "http://example.com/test#{i}").to_return(:status => 302, :headers => {"Location" => "http://example.com/test#{i + 1}"})
     end
-    lambda{ UrlFetcher.new("http://example.com/test0") }.should raise_error("Too many redirects")
+    lambda{ UrlFetcher.new("http://example.com/test0") }.should raise_error(UrlFetcher::TooManyRedirects)
   end
 
   it "should raise an error if an HTTP error is returned" do
