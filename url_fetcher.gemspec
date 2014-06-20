@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["dev@weheartit.com"]
   spec.description   = %q{Fetch resources from the internetz!}
   spec.summary       = %q{Fetch resources from the internetz with circular redirects support}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/weheartit/whi-url-fetcher"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

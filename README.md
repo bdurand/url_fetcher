@@ -1,6 +1,6 @@
 # UrlFetcher
 
-TODO: Write a gem description
+This gem provides a class that will fetch a URL response and save the body to a Tempfile. This can be useful if you are fetching large HTTP objects so you don't need to read them into memory all at once. The response body is exposed as a stream.
 
 ## Installation
 
@@ -18,7 +18,8 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+response = UrlFetcher.new("http://example.com/large_file")
+response.body # Returns a stream to a the body from a Tempfile on disk.
 
 ## Contributing
 

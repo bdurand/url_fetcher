@@ -1,27 +1,32 @@
-require "url_fetcher/version"
 require "net/http"
 require "open-uri"
 require "tempfile"
 
+require_relative "url_fetcher/version"
+
 # This class will fetch the contents of a URL and store them in a Tempfile. The
-# results are exposed as a stream. This class is not thread safe.
+# results are exposed as a stream so you don't need to read potentialy huge responses
+# into memory all at once.
 module UrlFetcher
   class Base
-    MEGABYTE = 1048576.freeze
+    MEGABYTE = 1048576
+    
     attr_reader :url
 
-    # Pass in a block that will be called with the new URL on a redirect to hook into
-    # the redirect logic. If this block returns false then the redirect will not be called.
+    # Create a fetcher for the specified URL.
+    #
+    # Options include (default in parentheses):
+    # * :unlink (true) - Automatically delete the Tempfile. The stream will still be open, but will not be accessible from any other process.
+    # * :follow_redirects (true) - Automatically follow redirects instead of returning the redirect response.
+    # * :method (:get) - HTTP method to use to fetch the URL.
+    # * :max_size (10 megabytes)- The maximum size in bytes that should be fetched.
+    # * :open_timeout (10) - Time in seconds to wait for a connection to be established.
+    # * :read_timeout (20) - Time in seconds to wait for reading the HTTP response.
     def initialize(url, options = {}, &redirect_hook)
       @url = url
       @redirect_hook = redirect_hook
-      # TODO: make hash with indifferent access?
       options = default_options.merge(options)
       @response = fetch_response(@url, options)
-    end
-
-    def default_options
-       { :unlink => true, :follow_redirects => true, :method => :get }
     end
 
     # Return an open stream to the downloaded URL.
@@ -45,6 +50,10 @@ module UrlFetcher
     end
 
     private
+
+    def default_options
+       { :unlink => true, :follow_redirects => true, :method => :get }
+    end
 
     def fetch_response(url, options, previous_attempts = [])
       raise "Too many redirects" if previous_attempts.size > 5
