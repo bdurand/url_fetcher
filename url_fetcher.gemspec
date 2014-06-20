@@ -1,11 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'url_fetcher/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "url_fetcher"
-  spec.version       = UrlFetcher::VERSION
+  spec.version       = File.read(File.expand_path("../VERSION", __FILE__)).chomp
   spec.authors       = ["weheartit"]
   spec.email         = ["dev@weheartit.com"]
   spec.description   = %q{Fetch resources from the internetz!}
