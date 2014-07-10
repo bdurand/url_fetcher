@@ -1,3 +1,4 @@
+require "url_fetcher/errors"
 require "net/http"
 require "open-uri"
 require "tempfile"
@@ -7,7 +8,8 @@ require "tempfile"
 # into memory all at once.
 class UrlFetcher
   MEGABYTE = 1048576
-  
+  MAX_ATTEMPTS = 5.freeze
+
   attr_reader :url
 
   # Create a fetcher for the specified URL.
@@ -53,10 +55,15 @@ class UrlFetcher
   end
 
   def fetch_response(url, options, previous_attempts = [])
-    raise "Too many redirects" if previous_attempts.size > 5
-    raise "Circular redirect" if previous_attempts.include?(url)
-    previous_attempts << url
+    if previous_attempts.size > MAX_ATTEMPTS
+      raise TooManyRedirects.new(previous_attempts.first, MAX_ATTEMPTS)
+    end
 
+    if previous_attempts.include?(url)
+      raise CircularRedirect.new(previous_attempts.first)
+    end
+
+    previous_attempts << url
     uri = URI(url)
 
     http = Net::HTTP.new(uri.host, uri.port)
