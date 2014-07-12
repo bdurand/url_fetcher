@@ -1,5 +1,6 @@
 require "url_fetcher/errors"
 require "net/http"
+require "openssl"
 require "open-uri"
 require "tempfile"
 
