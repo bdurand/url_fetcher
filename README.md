@@ -18,8 +18,10 @@ Or install it yourself as:
 
 ## Usage
 
+```ruby
 response = UrlFetcher.new("http://example.com/large_file")
 response.body # Returns a stream to a the body from a Tempfile on disk.
+```
 
 ## Contributing
 
