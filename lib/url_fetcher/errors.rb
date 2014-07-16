@@ -13,6 +13,16 @@ class UrlFetcher
     end
   end
 
+  class FileTooBig < Error
+    attr_reader :size
+    def initialize(size)
+      @size = size
+    end
+    
+    def to_s
+      "File too big (#{size} bytes)"
+    end
+  end
 
   class CircularRedirect < Error
     attr_reader :url
