@@ -123,6 +123,6 @@ describe UrlFetcher do
     WebMock.stub_request(:get, "http://example.com/test").to_return(:status => 200, :body => "Hello", :headers => {"Content-Length" => 1001})
     expect do
       UrlFetcher.new("http://example.com/test", :max_size => 1000)
-    end.to raise_error
+    end.to raise_error(UrlFetcher::FileTooBig)
   end
 end
