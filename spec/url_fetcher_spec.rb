@@ -125,4 +125,10 @@ describe UrlFetcher do
       UrlFetcher.new("http://example.com/test", :max_size => 1000)
     end.to raise_error(UrlFetcher::FileTooBig)
   end
+
+  it "should add headers to request" do
+    stub = stub_request(:get, "http://example.com/test").with(:headers => { 'User-Agent'=>"I'm a browser" })
+    url_fetcher = UrlFetcher.new("http://example.com/test", :headers => { "User-Agent" => "I'm a browser" })
+    expect(stub).to have_been_requested
+  end
 end
