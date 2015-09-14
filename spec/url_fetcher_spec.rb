@@ -8,8 +8,12 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    url_fetcher.body.open
+    expect(url_fetcher).to_not be_closed
+    expect(url_fetcher.body).to_not be_closed
     expect(url_fetcher.body.read).to eql("Hello")
+    url_fetcher.close
+    expect(url_fetcher).to be_closed
+    expect(url_fetcher.body).to be_closed
   end
 
   it "should perform a POST request" do
@@ -18,7 +22,6 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    url_fetcher.body.open
     expect(url_fetcher.body.read).to eql("Hello")
   end
 
@@ -37,7 +40,7 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    expect(url_fetcher.body.open.read).to eql("Hello")
+    expect(url_fetcher.body.read).to eql("Hello")
   end
 
   it "should honor redirects" do
@@ -48,7 +51,7 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    expect(url_fetcher.body.open.read).to eql("Hello")
+    expect(url_fetcher.body.read).to eql("Hello")
   end
 
   it "should not honor redirects if :follow_redirects == false" do
@@ -71,7 +74,7 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    expect(url_fetcher.body.open.read).to eql("Hello")
+    expect(url_fetcher.body.read).to eql("Hello")
     expect(redirects).to eql(["http://example.com/test2", "http://example.com/test3"])
   end
 
@@ -115,7 +118,8 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    expect(url_fetcher.body.open.read).to eql("Hello")
+    expect(url_fetcher.body).to_not be_closed
+    expect(url_fetcher.body.read).to eql("Hello")
     expect(url_fetcher.body.path).not_to be_nil
   end
 

@@ -29,9 +29,17 @@ class UrlFetcher
     @response = fetch_response(@url, options)
   end
 
-  # Return an open stream to the downloaded URL.
+  # Return a stream to the downloaded URL.
   def body
     @response.body if success?
+  end
+  
+  def close
+    body.close unless body.closed?
+  end
+  
+  def closed?
+    body.closed? if body
   end
 
   # Get the header with the specified name from the response.
@@ -93,7 +101,7 @@ class UrlFetcher
         raise FileTooBig.new(content_length) if content_length > (options[:max_size] || 10 * MEGABYTE)
         tempfile = Tempfile.new("url_fetcher", :encoding => 'ascii-8bit')
         resp.read_body(tempfile)
-        tempfile.close
+        tempfile.rewind
       end
     end
 
