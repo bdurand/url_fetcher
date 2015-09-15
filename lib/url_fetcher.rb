@@ -35,7 +35,7 @@ class UrlFetcher
   end
   
   def close
-    body.close unless body.closed?
+    body.close if body && !body.closed?
   end
   
   def closed?
