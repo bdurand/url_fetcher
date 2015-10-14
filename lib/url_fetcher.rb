@@ -99,7 +99,8 @@ class UrlFetcher
       if resp.is_a?(Net::HTTPSuccess) && resp.class.body_permitted?
         content_length = resp["Content-Length"].to_i
         raise FileTooBig.new(content_length) if content_length > (options[:max_size] || 10 * MEGABYTE)
-        tempfile = Tempfile.new("url_fetcher", :encoding => 'ascii-8bit')
+        ext = File.extname(url)
+        tempfile = Tempfile.new(["url_fetcher", ext], :encoding => 'ascii-8bit')
         resp.read_body(tempfile)
         tempfile.rewind
       end
