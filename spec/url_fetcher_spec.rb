@@ -14,6 +14,7 @@ describe UrlFetcher do
     url_fetcher.close
     expect(url_fetcher).to be_closed
     expect(url_fetcher.body).to be_closed
+    expect(url_fetcher.resolved_url).to eq("http://example.com/test")
   end
 
   it "should perform a POST request" do
@@ -47,19 +48,19 @@ describe UrlFetcher do
     WebMock.stub_request(:get, "http://example.com/test1").to_return(:status => 301, :headers => {"Location" => "http://example.com/test2"})
     WebMock.stub_request(:get, "http://example.com/test2").to_return(:status => 200, :body => "Hello", :headers => {"Content-Length" => 5})
     url_fetcher = UrlFetcher.new("http://example.com/test1")
-
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
     expect(url_fetcher.body.read).to eql("Hello")
+    expect(url_fetcher.resolved_url).to eq("http://example.com/test2")
   end
 
   it "should not honor redirects if :follow_redirects == false" do
     WebMock.stub_request(:get, "http://example.com/test1").to_return(:status => 301, :headers => {"Location" => "http://example.com/test2"})
     url_fetcher = UrlFetcher.new("http://example.com/test1", :follow_redirects => false)
-
     expect(url_fetcher).not_to be_success
     expect(url_fetcher).to be_redirect
+    expect(url_fetcher.resolved_url).to eq("http://example.com/test1")
   end
 
   it "should call a block before each redirect with the new location" do

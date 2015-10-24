@@ -11,7 +11,7 @@ class UrlFetcher
   MEGABYTE = 1048576
   MAX_ATTEMPTS = 5.freeze
 
-  attr_reader :url
+  attr_reader :url, :resolved_url
 
   # Create a fetcher for the specified URL.
   #
@@ -74,6 +74,7 @@ class UrlFetcher
 
     previous_attempts << url
     uri = URI(url)
+    @resolved_url = uri.to_s
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = options[:read_timeout] || 20 # This is seconds. Default is 60.
