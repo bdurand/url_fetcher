@@ -93,6 +93,8 @@ class UrlFetcher
       Net::HTTP::Get.new(uri.request_uri)
     end
 
+    options[:headers].each { |k,v| request[k]=v } if options[:headers]
+
     response = http.request(request) do |resp|
       unless resp.is_a?(Net::HTTPSuccess) || resp.is_a?(Net::HTTPRedirection)
         resp.value # Raises an appropriate HTTP error
