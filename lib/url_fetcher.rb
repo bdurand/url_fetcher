@@ -73,10 +73,11 @@ class UrlFetcher
     end
 
     previous_attempts << url
-    uri = URI(url)
+    uri = Addressable::URI.parse(url)
+    raise Addressable::URI::InvalidURIError.new(url) unless uri
     @resolved_url = uri.to_s
 
-    http = Net::HTTP.new(uri.host, uri.port)
+    http = Net::HTTP.new(uri.host, uri.port || uri.inferred_port)
     http.read_timeout = options[:read_timeout] || 20 # This is seconds. Default is 60.
     http.open_timeout = options[:open_timeout] || 10
     if uri.scheme == "https"
