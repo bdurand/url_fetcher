@@ -1,8 +1,8 @@
-require "url_fetcher/errors"
 require "net/http"
 require "openssl"
-require "open-uri"
+require "addressable/uri"
 require "tempfile"
+require "url_fetcher/errors"
 
 # This class will fetch the contents of a URL and store them in a Tempfile. The
 # results are exposed as a stream so you don't need to read potentialy huge responses
@@ -22,6 +22,7 @@ class UrlFetcher
   # * :max_size (10 megabytes)- The maximum size in bytes that should be fetched.
   # * :open_timeout (10) - Time in seconds to wait for a connection to be established.
   # * :read_timeout (20) - Time in seconds to wait for reading the HTTP response.
+  # * :headers ("Accept" => "*")- Hash of headers to send with request.
   def initialize(url, options = {}, &redirect_hook)
     @url = url
     @redirect_hook = redirect_hook
@@ -94,6 +95,17 @@ class UrlFetcher
       Net::HTTP::Get.new(uri.request_uri)
     end
 
+    if options[:headers]
+      options[:headers].each do |name, value|
+        name = name.to_s
+        values = Array(value)
+        request[name] = values[0].to_s
+        values[1, values.length].each do |val|          
+          request.add_field(name, val.to_s)
+        end
+      end
+    end
+    
     response = http.request(request) do |resp|
       unless resp.is_a?(Net::HTTPSuccess) || resp.is_a?(Net::HTTPRedirection)
         resp.value # Raises an appropriate HTTP error
