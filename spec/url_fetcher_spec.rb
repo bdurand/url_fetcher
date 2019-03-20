@@ -32,7 +32,7 @@ describe UrlFetcher do
     expect(url_fetcher).to be_success
     expect(url_fetcher).not_to be_redirect
     expect(url_fetcher.header("content-length")).to eql("5")
-    expect(url_fetcher.body).to be_nil
+    expect(url_fetcher.body.read).to eq ""
   end
 
   it "should work with SSL" do
@@ -43,7 +43,7 @@ describe UrlFetcher do
     expect(url_fetcher.header("content-length")).to eql("5")
     expect(url_fetcher.body.read).to eql("Hello")
   end
-  
+
   it "should send custom headers" do
     WebMock.stub_request(:get, "https://example.com/test").with(:headers => {"Accept" => ["image/jpeg", "image/gif"]}).to_return(:status => 200, :body => "Hello", :headers => {"Content-Length" => 5})
     url_fetcher = UrlFetcher.new("https://example.com/test", :headers => {"Accept" => ["image/jpeg", "image/gif"]})

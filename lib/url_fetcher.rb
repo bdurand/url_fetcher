@@ -34,11 +34,11 @@ class UrlFetcher
   def body
     @response.body if success?
   end
-  
+
   def close
     body.close if body && !body.closed?
   end
-  
+
   def closed?
     body.closed? if body
   end
@@ -100,12 +100,12 @@ class UrlFetcher
         name = name.to_s
         values = Array(value)
         request[name] = values[0].to_s
-        values[1, values.length].each do |val|          
+        values[1, values.length].each do |val|
           request.add_field(name, val.to_s)
         end
       end
     end
-    
+
     response = http.request(request) do |resp|
       unless resp.is_a?(Net::HTTPSuccess) || resp.is_a?(Net::HTTPRedirection)
         resp.value # Raises an appropriate HTTP error
@@ -113,7 +113,8 @@ class UrlFetcher
       if resp.is_a?(Net::HTTPSuccess) && resp.class.body_permitted?
         content_length = resp["Content-Length"].to_i
         raise FileTooBig.new(content_length) if content_length > (options[:max_size] || 10 * MEGABYTE)
-        ext = File.extname(url)
+        ext = File.extname(url.sub(/\?.*/, ''))
+        ext = nil if ext && ext.size > 12
         tempfile = Tempfile.new(["url_fetcher", ext], :encoding => 'ascii-8bit')
         resp.read_body(tempfile)
         tempfile.rewind
